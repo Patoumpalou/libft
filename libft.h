@@ -6,13 +6,15 @@
 /*   By: pihouvie <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/11/09 18:08:44 by pihouvie          #+#    #+#             */
-/*   Updated: 2017/12/14 23:08:33 by pihouvie         ###   ########.fr       */
+/*   Updated: 2018/01/10 20:39:17 by pihouvie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef LIBFT_H
 # define LIBFT_H
+# define BUFF_SIZE 10
 # include <stdlib.h>
+# include <fcntl.h>
 # include <unistd.h>
 # include <string.h>
 # include <stdio.h>
@@ -29,6 +31,7 @@ typedef struct		s_list
 	struct s_list	*next;
 }					t_list;
 
+int					get_next_line(const int fd, char **line);
 void				ft_freedoubletab(char **tab);
 char				*ft_convert_base(char *nbr, char *base_from, char *base_to);
 char				**ft_split_charset(char *str, char *charset);

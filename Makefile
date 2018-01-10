@@ -6,7 +6,7 @@
 #    By: pihouvie <marvin@42.fr>                    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2017/11/17 18:06:04 by pihouvie          #+#    #+#              #
-#    Updated: 2017/12/14 23:08:55 by pihouvie         ###   ########.fr        #
+#    Updated: 2018/01/10 20:39:36 by pihouvie         ###   ########.fr        #
 #                                                                              #
 #******************************************************************************#
 
@@ -31,7 +31,7 @@ SRCS	=	ft_atoi.c       ft_memcmp.c     ft_putstr.c     ft_striteri.c  \
 			ft_lstadd.c		ft_lstiter.c	ft_lstmap.c		ft_lstlen.c		\
 			ft_printlst.c	ft_strlowcase.c	ft_strupcase.c					\
 			ft_print_words_tables.c	ft_splitcharset.c	ft_convert_base.c	\
-			ft_freedoubletab.c
+			ft_freedoubletab.c	get_next_line.c
 
 OBJS	=	$(SRCS:.c=.o)
 
