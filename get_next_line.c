@@ -6,93 +6,104 @@
 /*   By: pihouvie <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/12/15 20:10:42 by pihouvie          #+#    #+#             */
-/*   Updated: 2017/12/20 19:13:23 by pihouvie         ###   ########.fr       */
+/*   Updated: 2018/01/10 22:18:16 by pihouvie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "get_next_line.h"
+#include "libft.h"
 
-int		ft_checkline(char *tab, char **bite, int ret)
+int		ft_checkline(char *buff, char **bite, int ret)
 {
-	int	i;
+	int		i;
+	int		x;
 
-//	printf("tab = |%s| ", tab);
+	x = ret;
 	i = 0;
-	while (tab[i] != '\n' &&ret--)
-	{	
+	while (buff[i] && buff[i] != '\n' && ret > 0)
+	{
+		ret--;
 		i++;
-//		printf("i = %i\n", i-1);
 	}
-	if (tab[i] && tab[i] == '\n')
+	if (buff[i] && buff[i] == '\n')
 	{
-		*bite = ft_strsub(tab, i+1, BUFF_SIZE);// bite == ce quil reste dans le buffer qand on enleve line
-	//	printf(" >>%s<< ", *bite);
-		getchar();
-		tab[i] = '\0';
-		return(i+1) ;
+		*bite = ft_strsub(buff, i + 1, BUFF_SIZE);
+		buff[i] = '\0';
+		return (i + 1);
 	}
-	if (ret < BUFF_SIZE)
-	{
-		printf("heeeeeeeeeeeeein\n");
-		return(-1);
-	}
-	return(0);
-}
-// what if pas de \n dans le buff ? 
-int		get_next_line(const int fd, char **line)
-{
-	static char	buff[BUFF_SIZE + 1];	
-	int		 ret;
-	char	*tmp;
-	int		couille;
-	char	*bite;
-
-	ret = 0;
-	bite = NULL;
-	couille = 0;
-	if (fd < 0 || fd > 12287 || !line)
+	if (x < BUFF_SIZE)
 		return (-1);
+	return (0);
+}
+
+int		ifbuff(char **line, char *buff, char *bite)
+{
+	int		couille;
+
+	couille = 0;
 	if (buff[0])
 	{
-//		printf("buff = |%s|\n", buff);
-		if((couille = ft_checkline(buff, &bite, ret)) > 0) //il y a un \n dans buff
+		if ((couille = ft_checkline(buff, &bite, BUFF_SIZE)) > 0)
 		{
-//			printf("couuuuuuuuu %i uuuuuuuuuu\n", couille);
-			*line = ft_strndup(buff, couille); 
-			ft_strcpy(buff, bite);// met se quil reste dans buff
-	
+			*line = ft_strndup(buff, couille);
+			ft_strcpy(buff, bite);
+			free(bite);
 			return (1);
 		}
 		else
-			*line = ft_strdup(buff);
-	}
-	else
-	{
-		*line = ft_memalloc(1);
-	}
-	while(couille == 0 && ((ret = read(fd, buff, BUFF_SIZE)) > 0))
-	{
-		printf("ret = %i\n", ret);
-		buff[ret] = '\0';
-		couille = ft_checkline(buff, &bite, ret);
-		tmp = ft_strjoin(*line, buff);
-		free(*line);
-		*line = tmp;
-	if (couille > 0)
 		{
-	//		printf(" >>%s<< ", bite);
-			ft_strcpy(buff, bite);
-//			free(bite);
+			*line = ft_strdup(buff);
+			ft_bzero(buff, BUFF_SIZE);
 		}
 	}
+	else
+		*line = ft_memalloc(1);
+	return (0);
+}
+
+int		whatdowedo(int ret, int couille, char **line, char *buff)
+{
+	if (ret == 0 && couille == 0 && *line[0] != '\0')
+		couille = -1;
 	if (ret == -1)
 		return (-1);
 	if (couille == -1)
 	{
-			ft_bzero(buff, BUFF_SIZE);
-			return (1);
+		ft_bzero(buff, BUFF_SIZE);
+		return (1);
 	}
-	if (ret == 0 && buff[0] == '\0')
+	if (ret == 0 && buff[0] == '\0' && *line[0] == '\0')
+	{
+		ft_bzero(buff, BUFF_SIZE);
 		return (0);
+	}
 	return (1);
+}
+
+int		get_next_line(const int fd, char **line)
+{
+	static char		buff[12288][BUFF_SIZE + 1];
+	int				ret;
+	char			*tmp;
+	int				couille;
+	char			*bite;
+
+	bite = NULL;
+	ret = 0;
+	if (fd < 0 || fd > 12287 || !line)
+		return (-1);
+	if ((couille = ifbuff(line, buff[fd], NULL)) == 1)
+		return (1);
+	while (couille == 0 && ((ret = read(fd, buff[fd], BUFF_SIZE)) > 0))
+	{
+		buff[fd][ret] = '\0';
+		couille = ft_checkline(buff[fd], &bite, ret);
+		tmp = ft_strjoin(*line, buff[fd]);
+		free(*line);
+		*line = tmp;
+		if (couille > 0)
+			ft_strcpy(buff[fd], bite);
+	}
+	if (bite != NULL)
+		free(bite);
+	return (whatdowedo(ret, couille, line, buff[fd]));
 }
